@@ -39,6 +39,52 @@ int main() {
 
     return 0;
 }
+--------------------------------------------
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	scanner.Scan()
+	a, _ := strconv.ParseInt(scanner.Text(), 10, 64)
+
+	scanner.Scan()
+	line := scanner.Text()
+	parts := strings.Fields(line)
+
+	var arr [10]int64
+	for i := 0; i < 10; i++ {
+		num, _ := strconv.ParseInt(parts[i], 10, 64)
+		arr[i] = num
+	}
+
+	a = a % 10
+	if a < 0 {
+		a += 10
+	}
+
+	var result [10]int64
+	for i := 0; i < 10; i++ {
+		newIndex := (i + int(a)) % 10
+		result[newIndex] = arr[i]
+	}
+
+	for i := 0; i < 10; i++ {
+		if i > 0 {
+			fmt.Print(" ")
+		}
+		fmt.Print(result[i])
+	}
+	fmt.Println()
+}
 
 Дана последовательность целых чисел. Определите и выведите на экран числа, которые встречаются в этой последовательности более одного раза. Если таких чисел нет, выведите 0.
 В выводе числа должны быть отсортированы в следующем порядке:
@@ -98,6 +144,66 @@ int main() {
     cout << endl;
 
     return 0;
+}
+------------------------------
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"sort"
+	"strconv"
+	"strings"
+)
+
+type Item struct {
+	value int64
+	count int
+}
+
+func main() {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	scanner.Scan()
+	n, _ := strconv.Atoi(scanner.Text())
+
+	scanner.Scan()
+	line := scanner.Text()
+	parts := strings.Fields(line)
+
+	freq := make(map[int64]int)
+	for _, part := range parts {
+		num, _ := strconv.ParseInt(part, 10, 64)
+		freq[num]++
+	}
+
+	var items []Item
+	for num, cnt := range freq {
+		if cnt > 1 {
+			items = append(items, Item{value: num, count: cnt})
+		}
+	}
+
+	if len(items) == 0 {
+		fmt.Println(0)
+		return
+	}
+
+	sort.Slice(items, func(i, j int) bool {
+		if items[i].count != items[j].count {
+			return items[i].count > items[j].count 
+		}
+		return items[i].value > items[j].value 
+	})
+
+	for i, item := range items {
+		if i > 0 {
+			fmt.Print(" ")
+		}
+		fmt.Print(item.value)
+	}
+	fmt.Println()
 }
 
 Дана матрица целых чисел размером n строк и n столбцов. Замените обратную диагональ
@@ -191,6 +297,81 @@ int main() {
 
     return 0;
 }
+------------------------------------------------------
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	scanner.Scan()
+	n, _ := strconv.Atoi(scanner.Text())
+
+	matrix := make([][]int64, n)
+	for i := 0; i < n; i++ {
+		scanner.Scan()
+		line := scanner.Text()
+		parts := strings.Fields(line)
+		row := make([]int64, n)
+		for j := 0; j < n; j++ {
+			num, _ := strconv.ParseInt(parts[j], 10, 64)
+			row[j] = num
+		}
+		matrix[i] = row
+	}
+
+	var candidates []int64
+	var sum int64 = 0
+	count := 0
+
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			if i < j && i+j > n-1 {
+				candidates = append(candidates, matrix[i][j])
+				sum += matrix[i][j]
+				count++
+			}
+		}
+	}
+
+	replacement := int64(-1)
+	found := false
+
+	if count > 0 {
+		if sum%int64(count) == 0 {
+			avg := sum / int64(count)
+			for i := 0; i < n && !found; i++ {
+				for j := 0; j < n && !found; j++ {
+					if i < j && i+j > n-1 && matrix[i][j] == avg {
+						replacement = int64(i + j)
+						found = true
+					}
+				}
+			}
+		}
+	}
+
+	for i := 0; i < n; i++ {
+		matrix[i][n-1-i] = replacement
+	}
+
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			if j > 0 {
+				fmt.Print(" ")
+			}
+			fmt.Print(matrix[i][j])
+		}
+		fmt.Println()
+	}
+}
 
 Дан массив из 10 целых чисел и целое число а. Выполните сдвиг всех элементов массива на а позиций вправо или влево (если а < 0). Если элемент выходит за границу массива, то он должен попасть на его противоположную сторону.
 
@@ -230,4 +411,50 @@ int main() {
     cout << endl;
 
     return 0;
+}
+---------------------------------------------
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	scanner.Scan()
+	a, _ := strconv.ParseInt(scanner.Text(), 10, 64)
+
+	scanner.Scan()
+	line := scanner.Text()
+	parts := strings.Fields(line)
+
+	var arr [10]int64
+	for i := 0; i < 10; i++ {
+		num, _ := strconv.ParseInt(parts[i], 10, 64)
+		arr[i] = num
+	}
+
+	a = a % 10
+	if a < 0 {
+		a += 10
+	}
+
+	var result [10]int64
+	for i := 0; i < 10; i++ {
+		newIndex := (i + int(a)) % 10
+		result[newIndex] = arr[i]
+	}
+
+	for i := 0; i < 10; i++ {
+		if i > 0 {
+			fmt.Print(" ")
+		}
+		fmt.Print(result[i])
+	}
+	fmt.Println()
 }
